@@ -23,7 +23,7 @@ taskflow/
 ├── frontend/                    React SPA
 │   └── src/
 │       ├── api/                 Axios client with JWT interceptor
-│       └── components/          Login, TaskList, TaskForm, PrivateRoute
+│       └── components/          Login, TaskList, TaskForm, PrivateRoute, Logout
 ├── docker-compose.yml           PostgreSQL container for local dev
 └── README.md
 ```
@@ -42,13 +42,17 @@ the bearer token and populate the Spring Security context so controllers can res
   production-realistic path (matches Amazon RDS/PostgreSQL experience).
 - **Ownership checks in the service layer**, not the controller, so authorization logic
   is unit-testable independent of HTTP.
+- **`TaskService` is `@Transactional`** so the Hibernate session stays open long enough
+  to lazily load the task's owner during ownership checks — without it, calls like
+  delete/update throw a `LazyInitializationException` once the initial repository call's
+  session closes.
 - **DTOs as Java records** to keep request/response contracts explicit and immutable.
 
 ## Running it locally
 
 **Backend** (from `backend/`):
 ```bash
-./mvnw spring-boot:run
+mvn spring-boot:run
 # API available at http://localhost:8080
 # H2 console at http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:taskflow)
 ```
@@ -56,12 +60,12 @@ the bearer token and populate the Spring Security context so controllers can res
 To run against Postgres instead:
 ```bash
 docker compose up -d postgres
-./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
 
 Run tests:
 ```bash
-./mvnw test
+mvn test
 ```
 
 **Frontend** (from `frontend/`):
@@ -88,9 +92,9 @@ npm start
    Spring Boot + React + JWT stack you use day-to-day.
 2. **(2 min)** Backend tour: entities → repositories → `TaskService` (point out the
    ownership check) → `TaskController` → `JwtAuthenticationFilter`/`SecurityConfig`.
-3. **(1 min)** Run `./mvnw test` live to show the JUnit/Mockito tests passing.
+3. **(1 min)** Run `mvn test` live to show the JUnit/Mockito tests passing.
 4. **(2 min)** Start the backend and frontend, register a user in the browser, and
-   create/edit/delete a couple of tasks live.
+   create/edit/delete a couple of tasks live, then log out with the Logout button.
 5. **(1–2 min)** Open the H2 console (or `psql` if using Postgres) to show the data
    actually persisting, and briefly mention what you'd add next (pagination, Kafka
    event on task completion, Docker Compose for both services, CI pipeline).
