@@ -86,23 +86,4 @@ npm start
 | PUT    | `/api/tasks/{id}`     | Yes           | Update a task (owner only) |
 | DELETE | `/api/tasks/{id}`     | Yes           | Delete a task (owner only) |
 
-## Suggested video walkthrough script (5–10 min)
 
-1. **(1 min)** What the project is and why you built it — a task manager reflecting the
-   Spring Boot + React + JWT stack you use day-to-day.
-2. **(2 min)** Backend tour: entities → repositories → `TaskService` (point out the
-   ownership check) → `TaskController` → `JwtAuthenticationFilter`/`SecurityConfig`.
-3. **(1 min)** Run `mvn test` live to show the JUnit/Mockito tests passing.
-4. **(2 min)** Start the backend and frontend, register a user in the browser, and
-   create/edit/delete a couple of tasks live, then log out with the Logout button.
-5. **(1–2 min)** Open the H2 console (or `psql` if using Postgres) to show the data
-   actually persisting, and briefly mention what you'd add next (pagination, Kafka
-   event on task completion, Docker Compose for both services, CI pipeline).
-
-## Possible next steps (good talking points if asked "what would you add?")
-
-- Dockerize the backend + frontend together in `docker-compose.yml`
-- GitHub Actions CI: build, test, and lint on every PR
-- Kafka event published when a task is marked `DONE`, consumed by a notification service
-- Pagination and filtering on `GET /api/tasks`
-- Role-based admin view across all users' tasks
